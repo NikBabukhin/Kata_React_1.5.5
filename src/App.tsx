@@ -109,6 +109,8 @@ export const App: React.FC = () => {
 
   const tasksForShow = filteredTasks();
 
+  const testingVariable = 34;
+
   return (
     <>
       <NewTaskForm
