@@ -51,6 +51,11 @@
     "@typescript-eslint/parser": "^5.62.0",
     "eslint-config-airbnb-typescript": "^17.1.0"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged":{
     "*.tsx": [
       "yarn lint:fix",
