@@ -31,7 +31,8 @@
     "eject": "react-scripts eject",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
-    "format": "prettier ./src --write"
+    "format": "prettier ./src --write",
+    "prepare": "husky"
   },
   "browserslist": {
     "production": [
@@ -56,7 +57,7 @@
       "pre-commit": "lint-staged"
     }
   },
-  "lint-staged":{
+  "lint-staged": {
     "*.tsx": [
       "yarn lint:fix",
       "git add"
