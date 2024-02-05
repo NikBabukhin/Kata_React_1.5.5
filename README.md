@@ -1,1 +1,1 @@
-[Deploy version](https://react-kata-todo-fmmnnsim5-nikolais-projects-68d05129.vercel.app/)
+[Deploy version](https://react-kata-todo.vercel.app/)
