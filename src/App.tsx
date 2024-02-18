@@ -1,110 +1,176 @@
-import './index.css';
-import React, { useState } from 'react';
-import { formatDistanceToNow } from 'date-fns';
+import "./index.css";
+import React, { useEffect, useState } from "react";
+import { formatDistanceToNow } from "date-fns";
 
-import { NewTaskForm } from './components/NewTaskForm/NewTaskForm';
-import { Footer } from './components/Footer/Footer';
-import { TaskList } from './components/TaskList/TaskList';
+import { NewTaskForm } from "./components/NewTaskForm/NewTaskForm";
+import { Footer } from "./components/Footer/Footer";
+import { TaskList } from "./components/TaskList/TaskList";
 import {
-  state,
   TaskStatusType,
   FilterOptionType,
   AppStateType,
-  TaskType,
-} from './store/state/state';
+  TaskType, task1, task2, task3, task4
+} from "./store/state/state";
+
+export const appState: AppStateType = {
+  tasks: [task4, task1, task2, task3],
+  filter: {
+    currentOption: "all"
+  },
+  newTitle: {
+    placeholder: "What needs to be done?",
+    autofocus: true,
+    initialValue: "",
+    isError: false
+  }
+};
+
 
 export const App: React.FC = () => {
-  const [appState, setAppState] = useState<AppStateType>(state);
+  let [state, setState] = useState<AppStateType>(appState);
 
-  const todoActions = {
-    addNewTask: (newValue: string) => {
-      const newTask: TaskType = {
-        taskId: `task${appState.tasks.length}${newValue.trim()}`,
-        isDone: false,
-        title: newValue,
-        taskStatus: 'inprogress',
-        timestamp: Date.now(),
-      };
-      const newState = { ...appState, tasks: [...appState.tasks, newTask] };
-      setAppState(newState);
-    },
-    deleteTask: (taskId: string) => {
-      setAppState({
-        ...appState,
-        tasks: appState.tasks.filter((task) => task.taskId !== taskId),
-      });
-    },
+  const countTime = (timeToDone: { seconds: number, minutes: number }) => {
+    if (timeToDone.seconds !== 0) {
+      --timeToDone.seconds;
+    } else if (timeToDone.seconds === 0 && timeToDone.minutes > 0) {
+      --timeToDone.minutes;
+      timeToDone.seconds = 59;
+    }
+    return timeToDone;
+  };
 
-    changeDoneStatus: (taskId: string) => {
-      setAppState({
-        ...appState,
-        tasks: appState.tasks.map((task) => {
-          if (task.taskId === taskId) {
-            task.isDone = !task.isDone;
-            task.taskStatus = task.isDone ? 'completed' : 'inprogress';
+  useEffect(() => {
+    setInterval(() => {
+      setState((state) => ({
+        ...state,
+        tasks: state.tasks.map(task => {
+          if (!task.isPaused) {
+            task.timeToDone = countTime({ minutes: task.timeToDone.minutes, seconds: task.timeToDone.seconds });
           }
           return task;
-        }),
-      });
-    },
+        })
+      }));
+    }, 1000);
+  }, []);
 
+  const todoActions = {
+    addNewTask: (newTitle: string, minutes: number, seconds: number, date: number) => {
+      const newTask: TaskType = {
+        taskId: `task${state.tasks.length}${newTitle.trim()}`,
+        isDone: false,
+        title: newTitle,
+        taskStatus: "inprogress",
+        timestamp: date,
+        timeToDone: {
+          seconds: seconds,
+          minutes: minutes
+        },
+        isPaused: true,
+        unmountTime: Date.now()
+      };
+      const newState = { ...state, tasks: [...state.tasks, newTask] };
+      setState(newState);
+
+    },
+    deleteTask: (taskId: string) => {
+      const newState = {
+        ...state,
+        tasks: state.tasks.filter((task) => task.taskId !== taskId)
+      };
+      setState(newState);
+
+    },
+    changeDoneStatus: (taskId: string) => {
+      const newState = {
+        ...state,
+        tasks: state.tasks.map((task) => {
+          if (task.taskId === taskId) {
+            task.isDone = !task.isDone;
+            task.taskStatus = task.isDone ? "completed" : "inprogress";
+          }
+          return task;
+        })
+      };
+      setState(newState);
+    },
     changeEditMode: (taskId: string, newMode: TaskStatusType) => {
       const newState = {
-        ...appState,
-        tasks: appState.tasks.map((task) => {
+        ...state,
+        tasks: state.tasks.map((task) => {
           if (task.taskId === taskId) {
             task.taskStatus = newMode;
           }
           return task;
-        }),
+        })
       };
-      setAppState(newState);
+      setState(newState);
     },
-
     changeTitle: (taskId: string, newTitle: string) => {
-      setAppState({
-        ...appState,
-        tasks: appState.tasks.map((task) => {
+      const newState = {
+        ...state,
+        tasks: state.tasks.map((task) => {
           if (task.taskId === taskId) {
             task.title = newTitle;
           }
           return task;
-        }),
-      });
+        })
+      };
+      setState(newState);
     },
+    playTimer: (taskId: string) => {
+      const newState = {
+        ...state, tasks: state.tasks.map(task => {
+          if (task.taskId === taskId) {
+            task.isPaused = false;
+          }
+          return task;
+        })
+      };
+      setState(newState);
+    },
+    stopTimer: (taskId: string) => {
+      const newState = {
+        ...state, tasks: state.tasks.map(task => {
+          if (task.taskId === taskId) {
+            task.isPaused = true;
+          }
+          return task;
+        })
+      };
+      setState(newState);
+    }
   };
 
   const changeError = (isNowError: boolean) => {
-    setAppState({
-      ...appState,
+    const newState = {
+      ...state,
       newTitle: {
-        ...appState.newTitle,
+        ...state.newTitle,
         isError: isNowError,
-        placeholder: isNowError ? 'Title is required' : 'What needs to be done?',
-      },
-    });
+        placeholder: isNowError ? "Title is required" : "What needs to be done?"
+      }
+    };
+    setState(newState);
   };
-
   const changeFilter = (newFilter: FilterOptionType) => {
-    setAppState({ ...appState, filter: { currentOption: newFilter } });
+    const newState = { ...state, filter: { currentOption: newFilter } };
+    setState(newState);
   };
-
   const filteredTasks = () => {
-    return appState.tasks.filter((task) => {
-      if (appState.filter.currentOption === 'inprogress') {
-        return task.isDone === false;
-      } else if (appState.filter.currentOption === 'completed') {
-        return task.isDone === true;
+    return state.tasks.filter((task) => {
+      if (state.filter.currentOption === "inprogress") {
+        return !task.isDone
+      } else if (state.filter.currentOption === "completed") {
+        return task.isDone
       } else {
         return true;
       }
     });
   };
-
   const clearCompleted = () => {
-    setAppState({ ...appState, tasks: appState.tasks.filter((task) => !task.isDone) });
+    const newState = { ...state, tasks: state.tasks.filter((task) => !task.isDone) };
+    setState(newState);
   };
-
   const calculateTime = (timestamp: Date) => formatDistanceToNow(timestamp);
 
   const tasksForShow = filteredTasks();
@@ -114,16 +180,18 @@ export const App: React.FC = () => {
       <NewTaskForm
         addNewTask={todoActions.addNewTask}
         changeError={changeError}
-        placeholder={appState.newTitle.placeholder}
-        initialvalue={appState.newTitle.initialValue}
-        isError={appState.newTitle.isError}
-        autofocus={appState.newTitle.autofocus}
+        placeholder={state.newTitle.placeholder}
+        initialvalue={state.newTitle.initialValue}
+        isError={state.newTitle.isError}
+        autofocus={state.newTitle.autofocus}
       />
 
       <TaskList
         calculateTime={calculateTime}
         changeTitle={todoActions.changeTitle}
         changeEditMode={todoActions.changeEditMode}
+        stopTimer={todoActions.stopTimer}
+        playTimer={todoActions.playTimer}
         tasks={tasksForShow}
         deleteTask={todoActions.deleteTask}
         changeDoneStatus={todoActions.changeDoneStatus}
@@ -132,8 +200,8 @@ export const App: React.FC = () => {
       <Footer
         clearCompleted={clearCompleted}
         changeFilter={changeFilter}
-        currentOption={appState.filter.currentOption}
-        currentActive={appState.tasks.filter((task) => !task.isDone).length}
+        currentOption={state.filter.currentOption}
+        currentActive={state.tasks.filter((task) => !task.isDone).length}
       />
     </>
   );
