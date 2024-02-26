@@ -1,12 +1,12 @@
-import React from "react";
+import React from 'react';
 
 type TimerPropsType = {
-  minutes: number,
-  seconds: number,
-}
+  minutes: number;
+  seconds: number;
+};
 
 export const Timer: React.FC<TimerPropsType> = ({ minutes, seconds }) => {
-  const showWithNull = (value: number) => value < 10 ? "0" + value : value;
+  const showWithNull = (value: number) => (value < 10 ? `0${value}` : value);
 
-  return <>{" " + showWithNull(minutes) + ":" + showWithNull(seconds) + " "}</>;
+  return <>{` ${showWithNull(minutes)}:${showWithNull(seconds)}`}</>;
 };

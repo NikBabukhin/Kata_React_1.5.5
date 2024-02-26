@@ -6,11 +6,11 @@ export type TaskType = {
   taskStatus: TaskStatusType;
   timestamp: number;
   timeToDone: {
-    seconds: number
-    minutes: number,
-  }
-  isPaused: boolean,
-  unmountTime: number,
+    seconds: number;
+    minutes: number;
+  };
+  isPaused: boolean;
+  unmountTime: number;
 };
 
 export type FilterOptionType = 'all' | 'completed' | 'inprogress';
@@ -34,10 +34,10 @@ export const task1: TaskType = {
   timestamp: 1706706014175,
   timeToDone: {
     minutes: 12,
-    seconds: 25
+    seconds: 25,
   },
   isPaused: true,
-  unmountTime: Date.now()
+  unmountTime: Date.now(),
 };
 
 export const task2: TaskType = {
@@ -48,10 +48,10 @@ export const task2: TaskType = {
   timestamp: 1706586001705,
   timeToDone: {
     minutes: 10,
-    seconds: 40
+    seconds: 40,
   },
   isPaused: false,
-  unmountTime: Date.now()
+  unmountTime: Date.now(),
 };
 
 export const task3: TaskType = {
@@ -62,10 +62,10 @@ export const task3: TaskType = {
   timestamp: 1706506001705,
   timeToDone: {
     minutes: 6,
-    seconds: 13
+    seconds: 13,
   },
   isPaused: false,
-  unmountTime: Date.now()
+  unmountTime: Date.now(),
 };
 
 export const task4: TaskType = {
@@ -76,10 +76,8 @@ export const task4: TaskType = {
   timestamp: 1706506445673,
   timeToDone: {
     minutes: 3,
-    seconds: 30
+    seconds: 30,
   },
   isPaused: false,
-  unmountTime: Date.now()
-}
-
-
+  unmountTime: Date.now(),
+};

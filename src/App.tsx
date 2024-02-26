@@ -1,35 +1,38 @@
-import "./index.css";
-import React, { useEffect, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
+import './index.css';
+import React, { useEffect, useState } from 'react';
+import { formatDistanceToNow } from 'date-fns';
 
-import { NewTaskForm } from "./components/NewTaskForm/NewTaskForm";
-import { Footer } from "./components/Footer/Footer";
-import { TaskList } from "./components/TaskList/TaskList";
+import { NewTaskForm } from './components/NewTaskForm/NewTaskForm';
+import { Footer } from './components/Footer/Footer';
+import { TaskList } from './components/TaskList/TaskList';
 import {
   TaskStatusType,
   FilterOptionType,
   AppStateType,
-  TaskType, task1, task2, task3, task4
-} from "./store/state/state";
+  TaskType,
+  task1,
+  task2,
+  task3,
+  task4,
+} from './store/state/state';
 
 export const appState: AppStateType = {
   tasks: [task4, task1, task2, task3],
   filter: {
-    currentOption: "all"
+    currentOption: 'all',
   },
   newTitle: {
-    placeholder: "What needs to be done?",
+    placeholder: 'What needs to be done?',
     autofocus: true,
-    initialValue: "",
-    isError: false
-  }
+    initialValue: '',
+    isError: false,
+  },
 };
 
-
 export const App: React.FC = () => {
-  let [state, setState] = useState<AppStateType>(appState);
+  const [state, setState] = useState<AppStateType>(appState);
 
-  const countTime = (timeToDone: { seconds: number, minutes: number }) => {
+  const countTime = (timeToDone: { seconds: number; minutes: number }) => {
     if (timeToDone.seconds !== 0) {
       --timeToDone.seconds;
     } else if (timeToDone.seconds === 0 && timeToDone.minutes > 0) {
@@ -43,12 +46,15 @@ export const App: React.FC = () => {
     setInterval(() => {
       setState((state) => ({
         ...state,
-        tasks: state.tasks.map(task => {
+        tasks: state.tasks.map((task) => {
           if (!task.isPaused) {
-            task.timeToDone = countTime({ minutes: task.timeToDone.minutes, seconds: task.timeToDone.seconds });
+            task.timeToDone = countTime({
+              minutes: task.timeToDone.minutes,
+              seconds: task.timeToDone.seconds,
+            });
           }
           return task;
-        })
+        }),
       }));
     }, 1000);
   }, []);
@@ -59,26 +65,24 @@ export const App: React.FC = () => {
         taskId: `task${state.tasks.length}${newTitle.trim()}`,
         isDone: false,
         title: newTitle,
-        taskStatus: "inprogress",
+        taskStatus: 'inprogress',
         timestamp: date,
         timeToDone: {
           seconds: seconds,
-          minutes: minutes
+          minutes: minutes,
         },
         isPaused: true,
-        unmountTime: Date.now()
+        unmountTime: Date.now(),
       };
       const newState = { ...state, tasks: [...state.tasks, newTask] };
       setState(newState);
-
     },
     deleteTask: (taskId: string) => {
       const newState = {
         ...state,
-        tasks: state.tasks.filter((task) => task.taskId !== taskId)
+        tasks: state.tasks.filter((task) => task.taskId !== taskId),
       };
       setState(newState);
-
     },
     changeDoneStatus: (taskId: string) => {
       const newState = {
@@ -86,10 +90,11 @@ export const App: React.FC = () => {
         tasks: state.tasks.map((task) => {
           if (task.taskId === taskId) {
             task.isDone = !task.isDone;
-            task.taskStatus = task.isDone ? "completed" : "inprogress";
+            task.taskStatus = task.isDone ? 'completed' : 'inprogress';
+            task.isPaused = true;
           }
           return task;
-        })
+        }),
       };
       setState(newState);
     },
@@ -101,7 +106,7 @@ export const App: React.FC = () => {
             task.taskStatus = newMode;
           }
           return task;
-        })
+        }),
       };
       setState(newState);
     },
@@ -113,32 +118,34 @@ export const App: React.FC = () => {
             task.title = newTitle;
           }
           return task;
-        })
+        }),
       };
       setState(newState);
     },
     playTimer: (taskId: string) => {
       const newState = {
-        ...state, tasks: state.tasks.map(task => {
+        ...state,
+        tasks: state.tasks.map((task) => {
           if (task.taskId === taskId) {
             task.isPaused = false;
           }
           return task;
-        })
+        }),
       };
       setState(newState);
     },
     stopTimer: (taskId: string) => {
       const newState = {
-        ...state, tasks: state.tasks.map(task => {
+        ...state,
+        tasks: state.tasks.map((task) => {
           if (task.taskId === taskId) {
             task.isPaused = true;
           }
           return task;
-        })
+        }),
       };
       setState(newState);
-    }
+    },
   };
 
   const changeError = (isNowError: boolean) => {
@@ -147,8 +154,8 @@ export const App: React.FC = () => {
       newTitle: {
         ...state.newTitle,
         isError: isNowError,
-        placeholder: isNowError ? "Title is required" : "What needs to be done?"
-      }
+        placeholder: isNowError ? 'Title is required' : 'What needs to be done?',
+      },
     };
     setState(newState);
   };
@@ -158,10 +165,10 @@ export const App: React.FC = () => {
   };
   const filteredTasks = () => {
     return state.tasks.filter((task) => {
-      if (state.filter.currentOption === "inprogress") {
-        return !task.isDone
-      } else if (state.filter.currentOption === "completed") {
-        return task.isDone
+      if (state.filter.currentOption === 'inprogress') {
+        return !task.isDone;
+      } else if (state.filter.currentOption === 'completed') {
+        return task.isDone;
       } else {
         return true;
       }

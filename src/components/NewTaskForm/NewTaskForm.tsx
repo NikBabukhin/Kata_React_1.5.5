@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 type NewTaskPropsType = {
   addNewTask: (taskId: string, minutes: number, seconds: number, date: number) => void;
@@ -10,23 +10,29 @@ type NewTaskPropsType = {
 };
 
 export const NewTaskForm: React.FC<NewTaskPropsType> = ({
-  addNewTask, changeError, placeholder,
-  initialvalue, isError, autofocus
+  addNewTask,
+  changeError,
+  placeholder,
+  initialvalue,
+  isError,
+  autofocus,
 }) => {
   const [localValue, setLocalValue] = useState<string>(initialvalue);
-  const [minutesValue, setMinutesValue] = useState<string>("");
-  const [secondsValue, setSecondsValue] = useState<string>("");
+  const [minutesValue, setMinutesValue] = useState<string>('00');
+  const [secondsValue, setSecondsValue] = useState<string>('00');
 
   const onChangeMinutesHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.currentTarget.value.trim()) {
-      const value = event.currentTarget.value.trim().replace(/\D/g, "");
-      setMinutesValue(Number(value) > 59 ? "00" : value);
+      const value = event.currentTarget.value.trim().replace(/\D/g, '');
+      changeError(false);
+      setMinutesValue(Number(value) > 59 ? '00' : value);
     }
   };
   const onChangeSecondsHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.currentTarget.value.trim()) {
-      const value = event.currentTarget.value.trim().replace(/\D/g, "");
-      setSecondsValue(Number(value) > 59 ? "00" : value);
+      const value = event.currentTarget.value.trim().replace(/\D/g, '');
+      changeError(false);
+      setSecondsValue(Number(value) > 59 ? '00' : value);
     }
   };
   const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,20 +42,25 @@ export const NewTaskForm: React.FC<NewTaskPropsType> = ({
     setLocalValue(event.currentTarget.value);
   };
   const onKeyPressEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (localValue.trim() === "") {
+    if (localValue.trim() === '' || (+minutesValue === 0 && +secondsValue === 0)) {
       changeError(true);
-      if (event.key === "Enter") {
-        setLocalValue("");
-        setMinutesValue("00");
-        setSecondsValue("00");
+      if (event.key === 'Enter') {
+        setLocalValue('');
+        setMinutesValue('00');
+        setSecondsValue('00');
       }
       return;
     }
-    if (event.key === "Enter" && !isError) {
-      addNewTask(localValue.trim(), Number(minutesValue), Number(secondsValue), Date.now());
-      setLocalValue("");
-      setMinutesValue("");
-      setSecondsValue("");
+    if (event.key === 'Enter' && !isError) {
+      addNewTask(
+        localValue.trim(),
+        Number(minutesValue),
+        Number(secondsValue),
+        Date.now()
+      );
+      setLocalValue('');
+      setMinutesValue('');
+      setSecondsValue('');
     }
   };
 

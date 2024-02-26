@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 
-import { Task } from "../Task/Task";
-import { TaskType, TaskStatusType } from "../../store/state/state";
+import { Task } from '../Task/Task';
+import { TaskType, TaskStatusType } from '../../store/state/state';
 
 type TaskListPropsType = {
   tasks: TaskType[];
@@ -10,15 +10,20 @@ type TaskListPropsType = {
   changeDoneStatus: (taskId: string) => void;
   changeEditMode: (taskId: string, newMode: TaskStatusType) => void;
   calculateTime: (time: Date) => string;
-  stopTimer: (taskId: string) => void,
-  playTimer: (taskId: string) => void,
+  stopTimer: (taskId: string) => void;
+  playTimer: (taskId: string) => void;
 };
 
 export const TaskList: React.FC<TaskListPropsType> = ({
-  tasks, deleteTask, changeDoneStatus, changeEditMode,
-  changeTitle, calculateTime, stopTimer, playTimer
+  tasks,
+  deleteTask,
+  changeDoneStatus,
+  changeEditMode,
+  changeTitle,
+  calculateTime,
+  stopTimer,
+  playTimer,
 }) => {
-
   return (
     <ul className="todo-list">
       {tasks.map((task) => {
